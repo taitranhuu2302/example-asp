@@ -10,9 +10,9 @@ import {createContact, updateContact} from "../services/ContactService";
 import Swal from "sweetalert2";
 
 const schema = yup.object().shape({
-  fullName: yup.string().required(),
-  email: yup.string().email().required(),
-  country: yup.string().required(),
+  fullName: yup.string().required("Họ và tên là trường bắt buộc"),
+  email: yup.string().email("Chưa đúng định dạng Email").required("Email là trường bắt buộc"),
+  country: yup.string().required("Quốc gia là trường bắt buộc"),
 })
 
 const ContactModal = ({open, onToggle, contact, refetch}) => {
@@ -44,13 +44,14 @@ const ContactModal = ({open, onToggle, contact, refetch}) => {
     const phoneSchema = await yup.string()
       .phone(data.country)
       .required().isValid(data.phoneNumber);
+    const country = CountryCode.filter(item => item.code === data.country)[0]?.name;
     if (!phoneSchema) {
-      setErrorPhone("Phone number not valid");
+      setErrorPhone(`Không đúng định dạng số điện thoại của quốc gia ${country}`);
       return;
     }
     const request = {
       ...data,
-      country: CountryCode.filter(item => item.code === data.country)[0].name,
+      country: country,
       numberPhone: data.phoneNumber
     }
     if (!contact) {
@@ -88,7 +89,7 @@ const ContactModal = ({open, onToggle, contact, refetch}) => {
         <Form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup>
             <Label for="examplePassword">
-              Full Name
+              Họ và tên
             </Label>
             <input className={'form-control'} {...register('fullName')}/>
 
@@ -111,7 +112,7 @@ const ContactModal = ({open, onToggle, contact, refetch}) => {
           </FormGroup>
           <FormGroup>
             <Label for="examplePassword">
-              Country
+              Quốc gia
             </Label>
             <select className={'form-control'} {...register('country')}>
               {
@@ -128,7 +129,7 @@ const ContactModal = ({open, onToggle, contact, refetch}) => {
           </FormGroup>
           <FormGroup>
             <Label for="examplePassword">
-              Phone
+              Số điện thoại
             </Label>
             <input className={'form-control'} {...register('phoneNumber')}/>
             {
@@ -137,7 +138,6 @@ const ContactModal = ({open, onToggle, contact, refetch}) => {
               </div>)
             }
           </FormGroup>
-          {/*<InputCt label={'Phone'} {...register('phoneNumber')} error={errors.phone}/>*/}
           <div className={'d-flex justify-content-end gap-3'}>
             <Button type={'submit'} color="primary">
               Lưu
