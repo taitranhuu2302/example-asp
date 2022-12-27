@@ -1,0 +1,15 @@
+﻿version: '3.8'
+services: 
+  db:
+    container_name: example_db
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db:/var/lib/mysql
+volumes: 
+  db:
